@@ -18,6 +18,11 @@
             background-color: #FAF9F6;
             color: #2D3748;
             scroll-behavior: smooth;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .dark body {
+            background-color: #1a1a1a;
+            color: #e2e8f0;
         }
         .font-title {
             font-family: 'Gowun Batang', Georgia, serif;
@@ -29,6 +34,9 @@
         ::-webkit-scrollbar-track {
             background: #FAF9F6;
         }
+        .dark ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
         ::-webkit-scrollbar-thumb {
             background: #D1CFC0;
             border-radius: 4px;
@@ -39,6 +47,7 @@
     </style>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -53,23 +62,31 @@
         }
     </script>
 </head>
-<body class="overflow-x-hidden antialiased">
+<body class="overflow-x-hidden antialiased dark:bg-stone-900 transition-colors duration-300">
 
-    <nav class="fixed top-0 left-0 w-full bg-warm-cream/80 backdrop-blur-md z-50 border-b border-stone-200 transition-all duration-300">
-        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="#" class="font-title text-xl font-bold tracking-tight text-stone-800 flex items-center gap-2">
+    <!-- Scroll Progress Bar -->
+    <div id="scroll-progress" class="fixed top-0 left-0 h-1 bg-bamboo-green z-[60] w-0 transition-all duration-150"></div>
+
+    <nav class="fixed top-0 left-0 w-full bg-warm-cream/80 dark:bg-stone-900/80 backdrop-blur-md z-50 border-b border-stone-200 dark:border-stone-800 transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="#" class="font-title text-xl font-bold tracking-tight text-stone-800 dark:text-stone-100 flex items-center gap-2">
                 <span class="inline-block w-3 h-3 rounded-full bg-bamboo-green animate-pulse"></span>
                 삼색쉼표
             </a>
-            <div class="hidden md:flex space-x-8 text-sm font-medium text-stone-600">
-                <a href="#intro" class="hover:text-stone-900 transition-colors">여정의 시작</a>
-                <a href="#curation" class="hover:text-stone-900 transition-colors">3색 큐레이션</a>
-                <a href="#highlights" class="hover:text-stone-900 transition-colors">오감 디테일</a>
-                <a href="#planner" class="hover:text-stone-900 transition-colors">코스 빌더</a>
+            <div class="hidden md:flex space-x-8 text-sm font-medium text-stone-600 dark:text-stone-400">
+                <a href="#intro" class="hover:text-stone-900 dark:hover:text-white transition-colors">여정의 시작</a>
+                <a href="#curation" class="hover:text-stone-900 dark:hover:text-white transition-colors">3색 큐레이션</a>
+                <a href="#highlights" class="hover:text-stone-900 dark:hover:text-white transition-colors">오감 디테일</a>
+                <a href="#planner" class="hover:text-stone-900 dark:hover:text-white transition-colors">코스 빌더</a>
             </div>
-            <a href="#planner" class="bg-stone-800 hover:bg-stone-900 text-white text-xs px-4 py-2 rounded-full font-medium tracking-wide transition-all duration-300 shadow-sm">
-                내 코스 만들기
-            </a>
+            <div class="flex items-center gap-4">
+                <button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors text-stone-600 dark:text-stone-300">
+                    <svg id="theme-icon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                </button>
+                <a href="#planner" class="whitespace-nowrap bg-stone-800 dark:bg-stone-100 hover:bg-stone-900 dark:hover:bg-white text-white dark:text-stone-900 text-xs px-4 py-2 rounded-full font-medium tracking-wide transition-all duration-300 shadow-sm">
+                    내 코스 만들기
+                </a>
+            </div>
         </div>
     </nav>
 
@@ -82,9 +99,8 @@
                 바쁜 일상 속 가벼운 탈출을 원하는 당신에게
             </p>
             
-            <h1 class="font-title text-4xl md:text-6xl lg:text-7xl font-bold text-stone-800 leading-tight md:leading-snug">
-                당신에게 지금 필요한<br>
-                <span class="text-bamboo-green underline decoration-wavy decoration-stone-300 underline-offset-8">휴식의 색깔</span>은 무엇인가요?
+            <h1 id="typing-title" class="font-title text-4xl md:text-6xl lg:text-7xl font-bold text-stone-800 leading-tight md:leading-snug break-keep h-auto md:h-48">
+                <!-- 타이핑 효과가 적용될 영역 -->
             </h1>
             
             <p class="font-title text-lg md:text-2xl text-stone-600 max-w-2xl mx-auto font-light leading-relaxed">
@@ -92,7 +108,7 @@
             </p>
             
             <div class="pt-6 flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <a href="#curation" class="group relative px-8 py-4 bg-stone-800 hover:bg-stone-900 text-white font-medium rounded-full overflow-hidden transition-all duration-300 shadow-lg text-sm tracking-wider flex items-center gap-2">
+                <a href="#curation" class="group relative px-10 py-5 bg-stone-800 hover:bg-stone-900 text-white font-medium rounded-full overflow-hidden transition-all duration-300 shadow-lg text-xs tracking-widest flex items-center gap-2">
                     여정 둘러보기
                     <svg class="w-4 h-4 transform group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
                 </a>
@@ -117,7 +133,7 @@
             <!-- 1. Damyang Card (Bamboo Green) -->
             <div onclick="selectCuration('damyang')" class="group cursor-pointer bg-white rounded-2xl border border-stone-200/60 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col h-full transform hover:-translate-y-2">
                 <div class="relative h-64 overflow-hidden bg-gradient-to-br from-emerald-800 to-emerald-950 flex items-center justify-center">
-                    <img id="card-damyang-img" src="담양대나무숲_2.jpg" alt="담양 죽녹원" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="handleCardDamyangImageError(this)">
+                    <img id="card-damyang-img" src="https://mblogthumb-phinf.pstatic.net/MjAyNjAzMTVfMTE1/MDAxNzczNTU0NDk2Mjk5.UAEbpPFTQ94yhalUeCNS5858ER4Tuiex2zMTMXlFcJkg.5DoxP4N6Y8lzVMVlz3RYN--M5IHOu1CsJ09avwiFU7cg.JPEG/20260307_131812.jpg?type=w800" alt="담양 죽녹원" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="handleCardDamyangImageError(this)">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                     <div class="absolute top-4 left-4 bg-bamboo-green text-white text-xs px-3 py-1.5 rounded-full font-semibold uppercase tracking-wider">
                         시각적 힐링
@@ -128,8 +144,8 @@
                     </div>
                 </div>
                 <div class="p-6 flex flex-col flex-grow justify-between space-y-4">
-                    <p class="text-stone-600 text-sm leading-relaxed">
-                        울창한 대나무 숲길(약 2.4km)에서 전해지는 피톤치드의 싱그러운 힐링과 신비로운 야간 불빛 산책. 대숲 사이로 은하수처럼 쏟아지는 불빛과 함께 평생 잊지 못할 인생샷을 남겨보세요.
+                    <p class="text-stone-600 text-sm leading-relaxed break-keep">
+                        울창한 대숲의 피톤치드와 신비로운 야간 불빛 산책. 은하수처럼 쏟아지는 조명 아래 평생 잊지 못할 인생샷을 남겨보세요.
                     </p>
                     <div class="flex items-center text-xs font-semibold text-bamboo-green group-hover:underline">
                         자세히 들여다보기 &rarr;
@@ -140,7 +156,7 @@
             <!-- 2. Ulsan Card (Pebble Blue) -->
             <div onclick="selectCuration('ulsan')" class="group cursor-pointer bg-white rounded-2xl border border-stone-200/60 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col h-full transform hover:-translate-y-2">
                 <div class="relative h-64 overflow-hidden bg-gradient-to-br from-sky-800 to-sky-950 flex items-center justify-center">
-                    <img id="card-ulsan-img" src="몽돌해변_2.jpg" alt="울산 주전몽돌해변" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="handleCardImageError(this)">
+                    <img id="card-ulsan-img" src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmmbF7a_V5ukoikVnq6Bvs2VhiTexUb47Cnb7G17-yHiqLuMG0tX5AuT3aU5cGyv42sLN0MkDzudoU1DJ_DrdfnJhl7KbLhNQyBvBaqFeHvGo9EekxsKtXwxQJTsiqL32hrvuQU=s680-w680-h510-rw" alt="울산 주전몽돌해변" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="handleCardImageError(this)">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                     <div class="absolute top-4 left-4 bg-pebble-blue text-white text-xs px-3 py-1.5 rounded-full font-semibold uppercase tracking-wider">
                         청각적 힐링
@@ -151,8 +167,8 @@
                     </div>
                 </div>
                 <div class="p-6 flex flex-col flex-grow justify-between space-y-4">
-                    <p class="text-stone-600 text-sm leading-relaxed">
-                        모래 대신 검은색 계열의 동글동글한 몽돌에 파도가 부서지는 청아한 소리. 바다를 품은 시원한 해안선 드라이브를 제공합니다.
+                    <p class="text-stone-600 text-sm leading-relaxed break-keep">
+                        파도에 굴러가는 몽돌의 청아한 소리, 바다를 품은 시원한 해안선 드라이브로 마음을 씻어보세요.
                     </p>
                     <div class="flex items-center text-xs font-semibold text-pebble-blue group-hover:underline">
                         자세히 들여다보기 &rarr;
@@ -163,7 +179,7 @@
             <!-- 3. Suncheon Card (Sunset Orange) -->
             <div onclick="selectCuration('suncheon')" class="group cursor-pointer bg-white rounded-2xl border border-stone-200/60 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col h-full transform hover:-translate-y-2">
                 <div class="relative h-64 overflow-hidden bg-gradient-to-br from-amber-800 to-amber-950 flex items-center justify-center">
-                    <img id="card-suncheon-img" src="순천만_2.jpg" alt="순천만습지" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="handleCardSuncheonImageError(this)">
+                    <img id="card-suncheon-img" src="https://upload.wikimedia.org/wikipedia/commons/3/35/20181231_Suncheon_Bay_002.jpg" alt="순천만습지" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" onerror="handleCardSuncheonImageError(this)">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
                     <div class="absolute top-4 left-4 bg-sunset-orange text-white text-xs px-3 py-1.5 rounded-full font-semibold uppercase tracking-wider">
                         감성적 힐링
@@ -174,8 +190,8 @@
                     </div>
                 </div>
                 <div class="p-6 flex flex-col flex-grow justify-between space-y-4">
-                    <p class="text-stone-600 text-sm leading-relaxed">
-                        국내 최대 갈대밭 위로 지는 환상적인 일몰 장관. 1960~80년대 레트로 드라마 세트장 골목에서의 감성적 시간여행을 제안합니다.
+                    <p class="text-stone-600 text-sm leading-relaxed break-keep">
+                        국내 최대 갈대밭 위로 번지는 황금빛 일몰. 레트로 골목을 거니는 감성적인 시간여행을 제안합니다.
                     </p>
                     <div class="flex items-center text-xs font-semibold text-sunset-orange group-hover:underline">
                         자세히 들여다보기 &rarr;
@@ -190,50 +206,50 @@
             <div class="bg-white rounded-3xl shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[600px] border border-stone-200">
                 
                 <!-- Left Sidebar Navigation for Cities -->
-                <div class="lg:col-span-3 bg-stone-50 border-r border-stone-200 p-6 md:p-8 flex flex-row lg:flex-col justify-around lg:justify-start lg:space-y-6">
-                    <button onclick="selectCuration('damyang')" id="btn-damyang" class="flex-1 lg:flex-initial text-left px-4 py-3 rounded-xl font-title font-bold text-lg transition-all duration-300 flex items-center gap-3 active-city-tab text-bamboo-green bg-bamboo-green/10">
+                <div class="lg:col-span-2 bg-stone-50 border-r border-stone-200 p-4 md:p-6 flex flex-row lg:flex-col justify-around lg:justify-start lg:space-y-6">
+                    <button onclick="selectCuration('damyang')" id="btn-damyang" class="flex-1 lg:flex-initial text-left px-3 py-2 rounded-xl font-title font-bold text-sm md:text-base transition-all duration-300 flex items-center gap-2 active-city-tab text-bamboo-green bg-bamboo-green/10">
                         <span class="w-2 h-2 rounded-full bg-bamboo-green"></span>
-                        담양 힐링숲
+                        담양
                     </button>
-                    <button onclick="selectCuration('ulsan')" id="btn-ulsan" class="flex-1 lg:flex-initial text-left px-4 py-3 rounded-xl font-title font-bold text-lg transition-all duration-300 flex items-center gap-3 text-stone-500 hover:text-stone-800">
+                    <button onclick="selectCuration('ulsan')" id="btn-ulsan" class="flex-1 lg:flex-initial text-left px-3 py-2 rounded-xl font-title font-bold text-sm md:text-base transition-all duration-300 flex items-center gap-2 text-stone-500 hover:text-stone-800">
                         <span class="w-2 h-2 rounded-full bg-transparent"></span>
-                        울산 바다
+                        울산
                     </button>
-                    <button onclick="selectCuration('suncheon')" id="btn-suncheon" class="flex-1 lg:flex-initial text-left px-4 py-3 rounded-xl font-title font-bold text-lg transition-all duration-300 flex items-center gap-3 text-stone-500 hover:text-stone-800">
+                    <button onclick="selectCuration('suncheon')" id="btn-suncheon" class="flex-1 lg:flex-initial text-left px-3 py-2 rounded-xl font-title font-bold text-sm md:text-base transition-all duration-300 flex items-center gap-2 text-stone-500 hover:text-stone-800">
                         <span class="w-2 h-2 rounded-full bg-transparent"></span>
-                        순천 갈대
+                        순천
                     </button>
                 </div>
 
                 <!-- Right Display Area for Selected Spot Content -->
-                <div class="lg:col-span-9 p-6 md:p-12 flex flex-col lg:flex-row gap-8 justify-between">
+                <div class="lg:col-span-10 p-6 md:p-12 flex flex-col lg:flex-row gap-8">
                     <div class="flex-1 flex flex-col justify-between space-y-8">
                         <div class="space-y-4">
                             <div class="flex flex-wrap items-center gap-3">
-                                <span id="detail-tag" class="text-xs font-semibold px-3 py-1 rounded-full text-white bg-bamboo-green transition-all duration-300">시각적 힐링</span>
-                                <span class="text-xs text-stone-400">오감 큐레이션 가이드</span>
+                                <span id="detail-tag" class="text-sm font-semibold px-4 py-1.5 rounded-full text-white bg-bamboo-green transition-all duration-300">시각적 힐링</span>
+                                <span class="text-xs text-stone-400 whitespace-nowrap">오감 큐레이션 가이드</span>
                             </div>
-                            <h3 id="detail-title" class="font-title text-3xl md:text-4xl font-bold text-stone-800 transition-all duration-300">
+                            <h3 id="detail-title" class="font-title text-3xl md:text-4xl font-bold text-stone-800 transition-all duration-300 break-keep">
                                 초록빛 싱그러운 대나무 바람, 담양
                             </h3>
-                            <p id="detail-desc" class="text-stone-600 text-sm md:text-base leading-relaxed transition-all duration-300 max-w-xl">
+                            <p id="detail-desc" class="text-stone-600 text-sm md:text-base leading-relaxed transition-all duration-300 max-w-xl break-keep break-words">
                                 대나무 숲길에 어둠이 찾아오면 밤하늘의 은하수를 수놓은 듯 총천연색 밤빛의 숲이 열립니다. 사그락거리는 나뭇잎 바람 소리와 밤의 신비를 온몸으로 누려보세요.
                             </p>
                         </div>
 
                         <!-- Ambient Sound Center -->
-                        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200 flex flex-col md:flex-row items-center justify-between gap-6">
-                            <div class="space-y-1 text-center md:text-left">
-                                <div class="flex items-center justify-center md:justify-start gap-2">
+                        <div class="p-6 rounded-2xl bg-stone-50 border border-stone-200 flex flex-row items-center justify-between gap-6">
+                            <div class="space-y-1 text-left">
+                                <div class="flex items-center justify-start gap-2">
                                     <span class="relative flex h-3 w-3">
                                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-stone-400" id="audio-pulse-ping"></span>
                                       <span class="relative inline-flex rounded-full h-3 w-3 bg-stone-400" id="audio-pulse-dot"></span>
                                     </span>
-                                    <h4 class="font-title font-bold text-stone-800">오감 청각 힐링 재생기</h4>
+                                    <h4 class="font-title font-bold text-stone-800 whitespace-nowrap">오감 청각 힐링 재생기</h4>
                                 </div>
-                                <p class="text-xs text-stone-500">인공 합성된 실제 백색소음으로 가상 공간의 소리를 느껴보세요.</p>
+                                <p class="text-xs text-stone-500 hidden md:block">인공 합성된 실제 백색소음으로 가상 공간의 소리를 느껴보세요.</p>
                             </div>
-                            <button onclick="toggleAudio()" id="btn-audio" class="w-full md:w-auto px-6 py-3 bg-stone-800 text-white rounded-full font-semibold text-sm hover:bg-stone-900 shadow-md flex items-center justify-center gap-3 transition-all duration-300">
+                            <button onclick="toggleAudio()" id="btn-audio" class="w-auto px-6 py-3 bg-stone-800 text-white rounded-full font-semibold text-sm hover:bg-stone-900 shadow-md flex items-center justify-center gap-3 transition-all duration-300 shrink-0">
                                 <svg id="svg-play-icon" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
                                 <span id="audio-btn-text">바람소리 듣기</span>
                             </button>
@@ -243,22 +259,22 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
                             <div class="space-y-2 border-l-2 border-bamboo-green pl-4" id="spot-1-border">
                                 <div class="text-xs font-bold text-stone-400 uppercase tracking-widest">대표 볼거리</div>
-                                <h5 id="spot-1-title" class="font-title text-lg font-bold text-stone-800">죽녹원 대나무숲</h5>
-                                <p id="spot-1-desc" class="text-xs text-stone-600 leading-relaxed">
+                                <h5 id="spot-1-title" class="font-title text-lg font-bold text-stone-800 break-keep">죽녹원 대나무숲</h5>
+                                <p id="spot-1-desc" class="text-xs text-stone-600 leading-relaxed break-keep">
                                     약 2.4km의 산책로와 8개의 테마길이 어우러져 피톤치드를 한껏 머금기 좋은 청량 구역.
                                 </p>
                             </div>
                             <div class="space-y-2 border-l-2 border-bamboo-green pl-4" id="spot-2-border">
                                 <div class="text-xs font-bold text-stone-400 uppercase tracking-widest">인생샷 명소</div>
-                                <h5 id="spot-2-title" class="font-title text-lg font-bold text-stone-800">메타프로방스</h5>
-                                <p id="spot-2-desc" class="text-xs text-stone-600 leading-relaxed">
+                                <h5 id="spot-2-title" class="font-title text-lg font-bold text-stone-800 break-keep">메타프로방스</h5>
+                                <p id="spot-2-desc" class="text-xs text-stone-600 leading-relaxed break-keep">
                                     유럽풍 이국적인 파스텔톤 건물과 포토존 가득. 밤에는 은은한 전구빛이 수놓는 감성 아지트.
                                 </p>
                             </div>
                             <div class="space-y-2 border-l-2 border-bamboo-green pl-4" id="spot-3-border">
                                 <div class="text-xs font-bold text-stone-400 uppercase tracking-widest">로컬 대표 미식</div>
-                                <h5 id="spot-3-title" class="font-title text-lg font-bold text-stone-800">떡갈비 & 국수거리</h5>
-                                <p id="spot-3-desc" class="text-xs text-stone-600 leading-relaxed">
+                                <h5 id="spot-3-title" class="font-title text-lg font-bold text-stone-800 break-keep">떡갈비 & 국수거리</h5>
+                                <p id="spot-3-desc" class="text-xs text-stone-600 leading-relaxed break-keep">
                                     육즙이 가득하고 달큼 담백한 담양 대나무향 떡갈비와 강가를 따라 노상에서 즐기는 잔치국수.
                                 </p>
                             </div>
@@ -266,7 +282,7 @@
                     </div>
 
                     <!-- Right Column: Visual Showcase Frame -->
-                    <div class="w-full lg:w-80 shrink-0 h-64 lg:h-auto rounded-2xl overflow-hidden relative shadow-md group border border-stone-200/50 bg-stone-50 flex items-center justify-center">
+                    <div class="w-full lg:w-80 shrink-0 h-64 lg:h-auto rounded-2xl overflow-hidden relative shadow-md group border border-stone-200/50 bg-stone-50 flex items-center justify-center order-first lg:order-last">
                         <div id="detail-img-container" class="w-full h-full transition-all duration-500">
                             <!-- Injected Dynamically via JS -->
                         </div>
@@ -276,44 +292,7 @@
         </div>
     </section>
 
-    <section class="py-24 px-4 bg-warm-cream">
-        <div class="max-w-6xl mx-auto">
-            <div class="text-center space-y-4 mb-16">
-                <h2 class="font-title text-3xl md:text-4xl font-bold text-stone-800">우리가 제안하는 특별한 가치</h2>
-                <p class="text-stone-500 max-w-lg mx-auto text-sm">트렌디한 2030 여행자의 마음을 꿰뚫는 오감 만족 가이드라인입니다.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white p-8 rounded-2xl border border-stone-200/50 shadow-sm space-y-4">
-                    <div class="w-12 h-12 rounded-xl bg-bamboo-green/10 flex items-center justify-center text-bamboo-green">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    </div>
-                    <h4 class="font-title text-xl font-bold text-stone-800">확실한 인생샷 보장</h4>
-                    <p class="text-sm text-stone-600 leading-relaxed">
-                        메타프로방스의 파스텔 색감, 순천만의 주홍빛 노을, 드라마세트장의 아기자기한 레트로 세트, 죽녹원의 고혹적인 은하수 불빛까지 무조건 성공하는 촬영 스팟만 담았습니다.
-                    </p>
-                </div>
-                <div class="bg-white p-8 rounded-2xl border border-stone-200/50 shadow-sm space-y-4">
-                    <div class="w-12 h-12 rounded-xl bg-pebble-blue/10 flex items-center justify-center text-pebble-blue">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    </div>
-                    <h4 class="font-title text-xl font-bold text-stone-800">심도 깊은 온전한 오감 쉼</h4>
-                    <p class="text-sm text-stone-600 leading-relaxed">
-                        도시의 기계음에서 완전히 벗어나 자연이 만들어낸 리듬을 그대로 간직합니다. 바람이 스치는 숲길, 돌이 굴러가는 소리가 지친 일상을 씻깁니다.
-                    </p>
-                </div>
-                <div class="bg-white p-8 rounded-2xl border border-stone-200/50 shadow-sm space-y-4">
-                    <div class="w-12 h-12 rounded-xl bg-sunset-orange/10 flex items-center justify-center text-sunset-orange">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    </div>
-                    <h4 class="font-title text-xl font-bold text-stone-800">실패 없는 로컬 시그니처 미식</h4>
-                    <p class="text-sm text-stone-600 leading-relaxed">
-                        여행의 꽃은 맛이죠. 담양의 감칠맛 떡갈비, 울산의 상큼한 오션뷰 물회, 순천 남도의 꼬막 가득 한정식까지 빈틈없는 로컬 푸드 여정을 약속합니다.
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Removed '우리가 제안하는 특별한 가치' section -->
 
     <section id="planner" class="py-24 px-4 bg-stone-900 text-stone-100 scroll-mt-16">
         <div class="max-w-4xl mx-auto space-y-12">
@@ -395,22 +374,28 @@
             </div>
 
             <!-- The Beautiful Digital Healing Ticket Result -->
-            <div class="bg-warm-cream text-stone-800 rounded-3xl p-6 md:p-8 shadow-2xl border-2 border-stone-300 relative overflow-hidden max-w-2xl mx-auto">
-                <div class="absolute -left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-stone-900"></div>
-                <div class="absolute -right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-stone-900"></div>
+            <div class="bg-stone-50 text-stone-800 rounded-lg p-6 md:p-8 shadow-inner border border-stone-200 relative overflow-hidden max-w-3xl mx-auto font-mono">
+                <!-- Decorative perforation effects -->
+                <div class="absolute -left-3 top-10 w-6 h-6 rounded-full bg-stone-900"></div>
+                <div class="absolute -left-3 bottom-10 w-6 h-6 rounded-full bg-stone-900"></div>
+                <div class="absolute -right-3 top-10 w-6 h-6 rounded-full bg-stone-900"></div>
+                <div class="absolute -right-3 bottom-10 w-6 h-6 rounded-full bg-stone-900"></div>
                 
                 <div class="flex justify-between items-start border-b-2 border-dashed border-stone-300 pb-6 mb-6">
                     <div>
-                        <h5 class="font-title text-2xl font-bold tracking-tight text-stone-800">3-COLOR HEALING TICKET</h5>
-                        <p class="text-xs text-stone-400 mt-1">오감으로 걷는 영원의 치유 여정</p>
+                        <h5 class="font-title text-2xl font-bold tracking-tight text-stone-800">3-COLOR HEALING PASS</h5>
+                        <p class="text-[10px] text-stone-500 mt-1 uppercase tracking-widest">OFFICIAL HEALING DOCUMENT</p>
                     </div>
-                    <span class="text-xs font-mono bg-stone-200 px-3 py-1.5 rounded-md font-bold tracking-widest text-stone-600">PASS-2026</span>
+                    <div class="text-right">
+                        <span class="block text-[10px] font-bold text-stone-400">TICKET NO.</span>
+                        <span class="text-xs font-mono font-bold tracking-widest text-stone-700 bg-stone-200 px-2 py-1 rounded">2026-HC</span>
+                    </div>
                 </div>
 
                 <div class="space-y-4">
                     <div>
-                        <span class="text-[10px] uppercase font-bold text-stone-400 tracking-wider">나의 선택 코스 목록</span>
-                        <ul id="ticket-courses" class="space-y-1.5 mt-2 max-h-48 overflow-y-auto pr-2">
+                        <span class="text-[10px] uppercase font-bold text-stone-400 tracking-wider">SELECTED JOURNEY</span>
+                        <ul id="ticket-courses" class="space-y-2 mt-3 max-h-48 overflow-y-auto pr-2 text-sm">
                             <!-- Populated dynamically -->
                         </ul>
                     </div>
@@ -449,6 +434,21 @@
                 <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                 <span id="toast-msg">티켓 코스가 성공적으로 클립보드에 복사되었습니다!</span>
             </div>
+        </div>
+    </section>
+
+    <!-- Guestbook Section -->
+    <section id="guestbook" class="py-24 px-4 bg-stone-100 dark:bg-stone-800 transition-colors duration-300">
+        <div class="max-w-4xl mx-auto">
+            <h3 class="font-title text-2xl font-bold mb-8 text-center text-stone-800 dark:text-stone-100">여정의 발자취 (방명록)</h3>
+            <div class="bg-white dark:bg-stone-700 p-6 rounded-2xl shadow-sm mb-12 border border-stone-200 dark:border-stone-600">
+                <div class="flex flex-col gap-4">
+                    <input id="guest-name" type="text" placeholder="이름" class="p-3 border rounded-lg bg-stone-50 dark:bg-stone-600 dark:text-white focus:ring-2 focus:ring-bamboo-green outline-none">
+                    <textarea id="guest-msg" placeholder="여행에 대한 짧은 소감을 남겨주세요!" class="p-3 border rounded-lg bg-stone-50 dark:bg-stone-600 dark:text-white h-24 focus:ring-2 focus:ring-bamboo-green outline-none"></textarea>
+                    <button onclick="addEntry()" class="bg-stone-800 dark:bg-stone-100 text-white dark:text-stone-900 py-3 rounded-lg font-bold hover:opacity-90 transition-opacity">남기기</button>
+                </div>
+            </div>
+            <div id="guestbook-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"></div>
         </div>
     </section>
 
@@ -745,7 +745,7 @@
 
             setTimeout(() => {
                 const tagEl = document.getElementById('detail-tag');
-                tagEl.className = `text-xs font-semibold px-3 py-1 rounded-full text-white transition-all duration-300 bg-${data.themeColor}`;
+                tagEl.className = `text-sm font-semibold px-4 py-1.5 rounded-full text-white transition-all duration-300 bg-${data.themeColor}`;
                 tagEl.innerText = data.tag;
 
                 document.getElementById('detail-title').innerText = data.title;
@@ -767,15 +767,15 @@
                 const imgContainer = document.getElementById('detail-img-container');
                 if (cityId === 'damyang') {
                     imgContainer.innerHTML = `
-                        <img src="담양대나무숲_2.jpg" alt="담양 죽녹원 디테일" class="w-full h-full object-cover transition-transform duration-700" onerror="handleDetailDamyangImageError(this)">
+                        <img src="https://mblogthumb-phinf.pstatic.net/MjAyNjAzMTVfMTE1/MDAxNzczNTU0NDk2Mjk5.UAEbpPFTQ94yhalUeCNS5858ER4Tuiex2zMTMXlFcJkg.5DoxP4N6Y8lzVMVlz3RYN--M5IHOu1CsJ09avwiFU7cg.JPEG/20260307_131812.jpg?type=w800" alt="담양 죽녹원 디테일" class="w-full h-full object-cover transition-transform duration-700" onerror="handleDetailDamyangImageError(this)">
                     `;
                 } else if (cityId === 'ulsan') {
                     imgContainer.innerHTML = `
-                        <img src="몽돌해변_2.jpg" alt="울산 주전몽돌해변 디테일" class="w-full h-full object-cover transition-transform duration-700" onerror="handleDetailImageError(this)">
+                        <img src="https://lh3.googleusercontent.com/gps-cs-s/AHRPTWmmbF7a_V5ukoikVnq6Bvs2VhiTexUb47Cnb7G17-yHiqLuMG0tX5AuT3aU5cGyv42sLN0MkDzudoU1DJ_DrdfnJhl7KbLhNQyBvBaqFeHvGo9EekxsKtXwxQJTsiqL32hrvuQU=s680-w680-h510-rw" alt="울산 주전몽돌해변 디테일" class="w-full h-full object-cover transition-transform duration-700" onerror="handleDetailImageError(this)">
                     `;
                 } else if (cityId === 'suncheon') {
                     imgContainer.innerHTML = `
-                        <img src="순천만_2.jpg" alt="순천만습지 디테일" class="w-full h-full object-cover transition-transform duration-700" onerror="handleDetailSuncheonImageError(this)">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/35/20181231_Suncheon_Bay_002.jpg" alt="순천만습지 디테일" class="w-full h-full object-cover transition-transform duration-700" onerror="handleDetailSuncheonImageError(this)">
                     `;
                 } else {
                     imgContainer.innerHTML = svgAssets[cityId];
@@ -1031,10 +1031,102 @@
         // Initialize state inside window load hook
         window.onload = function() {
             updateTicket();
+            renderGuestbook(); // 방명록 로드
+            
+            // 타이핑 효과 실행
+            const typingTitle = document.getElementById('typing-title');
+            const lines = [
+                { text: "당신에게 지금 필요한", class: "" },
+                { text: "<br>", class: "break" },
+                { text: "휴식의 색깔", class: "text-bamboo-green underline decoration-wavy decoration-stone-300 underline-offset-8" },
+                { text: "은 무엇인가요?", class: "" }
+            ];
+
+            let lineIndex = 0;
+            let charIndex = 0;
+
+            function typeEffect() {
+                if (lineIndex < lines.length) {
+                    const currentLine = lines[lineIndex];
+                    
+                    if (currentLine.text === "<br>") {
+                        typingTitle.innerHTML += "<br>";
+                        lineIndex++;
+                        setTimeout(typeEffect, 100);
+                        return;
+                    }
+
+                    if (charIndex === 0 && currentLine.class) {
+                        typingTitle.innerHTML += `<span class="${currentLine.class}"></span>`;
+                    } else if (charIndex === 0) {
+                        typingTitle.innerHTML += `<span></span>`;
+                    }
+
+                    const currentSpan = typingTitle.lastElementChild;
+                    currentSpan.innerHTML += currentLine.text.charAt(charIndex);
+                    charIndex++;
+
+                    if (charIndex < currentLine.text.length) {
+                        setTimeout(typeEffect, 80);
+                    } else {
+                        lineIndex++;
+                        charIndex = 0;
+                        setTimeout(typeEffect, 150);
+                    }
+                }
+            }
+            typeEffect();
+
             // Load the default Damyang graphic image with custom fallback
             document.getElementById('detail-img-container').innerHTML = `
-                <img src="담양대나무숲_2.jpg" alt="담양 죽녹원 디테일" class="w-full h-full object-cover transition-transform duration-700" onerror="handleDetailDamyangImageError(this)">
+                <img src="https://mblogthumb-phinf.pstatic.net/MjAyNjAzMTVfMTE1/MDAxNzczNTU0NDk2Mjk5.UAEbpPFTQ94yhalUeCNS5858ER4Tuiex2zMTMXlFcJkg.5DoxP4N6Y8lzVMVlz3RYN--M5IHOu1CsJ09avwiFU7cg.JPEG/20260307_131812.jpg?type=w800" alt="담양 죽녹원 디테일" class="w-full h-full object-cover transition-transform duration-700" onerror="handleDetailDamyangImageError(this)">
             `;
+        }
+
+        // Scroll progress logic
+        window.onscroll = function() {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById("scroll-progress").style.width = scrolled + "%";
+        };
+
+        // Dark/Light mode toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            const isDark = html.classList.contains('dark');
+            const icon = document.getElementById('theme-icon');
+            if (isDark) {
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707.707M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>`;
+            } else {
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>`;
+            }
+        }
+
+        // 방명록 로직 추가
+        function addEntry() {
+            const name = document.getElementById('guest-name').value;
+            const msg = document.getElementById('guest-msg').value;
+            if (!name || !msg) return;
+            const entries = JSON.parse(localStorage.getItem('guestbook') || '[]');
+            entries.unshift({ name, msg, date: new Date().toLocaleDateString() });
+            localStorage.setItem('guestbook', JSON.stringify(entries));
+            renderGuestbook();
+            document.getElementById('guest-name').value = '';
+            document.getElementById('guest-msg').value = '';
+        }
+
+        function renderGuestbook() {
+            const list = document.getElementById('guestbook-list');
+            const entries = JSON.parse(localStorage.getItem('guestbook') || '[]');
+            const colors = ['bg-yellow-100', 'bg-blue-100', 'bg-pink-100', 'bg-green-100'];
+            list.innerHTML = entries.map((e, index) => `
+                <div class="${colors[index % colors.length]} dark:bg-stone-600 p-4 rounded shadow-md transform ${index % 2 === 0 ? 'rotate-1' : '-rotate-1'} hover:rotate-0 transition-transform">
+                    <p class="text-sm italic mb-2 text-stone-800 dark:text-stone-100">"${e.msg}"</p>
+                    <p class="text-[10px] font-bold text-right text-stone-600 dark:text-stone-300">- ${e.name}</p>
+                </div>
+            `).join('');
         }
     </script>
 </body>
